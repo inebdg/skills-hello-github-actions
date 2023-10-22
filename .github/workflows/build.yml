@@ -1,1 +1,37 @@
+name: Cross-Compile C/C++ Programs
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target-arch:
+          - x86_64
+          - arm64
+          # Add more target architectures as needed
+
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v2
+
+    - name: Set up C/C++ cross-compiler
+      run: |
+        if [ ${{ matrix.target-arch }} == 'x86_64' ]; then
+          export CROSS_COMPILER=x86_64-linux-gnu-
+        elif [ ${{ matrix.target-arch }} == 'arm64' ]; then
+          export CROSS_COMPILER=aarch64-linux-gnu-
+        fi
+
+    - name: Compile the program
+      run: |
+        $CROSS_COMPILERgcc -o myprogram myprogram.c
+        # Or use C++: $CROSS_COMPILERg++ -o myprogram myprogram.cpp
+
+    - name: Run the program
+      run: $CROSS_COMPILER./myprogram
 
